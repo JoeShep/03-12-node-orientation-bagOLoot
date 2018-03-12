@@ -24,9 +24,22 @@ module.exports.getToysByChild = (name) => {
   });
 };
 
-module.exports.addToy = () => {
+module.exports.addToy = (toy, childName) => {
+  const [first, last] = splitName(childName);
   return new Promise((resolve, reject) => {
-    resolve(6);
+    db.run(
+      `INSERT INTO toys
+    VALUES(
+      null,
+      "${toy}",
+      0,
+      ( SELECT child_id FROM children WHERE first_name = "${first}" AND last_name = "${last}")
+    )`,
+      function(err) {
+        if (err) reject(err);
+        resolve(this.lastID);
+      }
+    );
   });
 };
 
