@@ -105,10 +105,11 @@ describe("lootbag", () => {
   });
 
   //Must be able to set the delivered property of a child, which defaults to false, to true.
+  // I just refactored the single test we wrote in class. Is there anything else you think should be covered in tests for this feature?
   describe("makeChildHappy", () => {
     it("should return a confirmation", () => {
-      return makeChildHappy().then(msg => {
-        equal("Toys marked as delivered", msg);
+      return makeChildHappy("Yeraldi Morales").then(msg => {
+        equal("Toys marked as delivered!", msg);
       });
     });
   });

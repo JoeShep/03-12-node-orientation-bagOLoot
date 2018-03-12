@@ -48,6 +48,7 @@ module.exports.removeToy = (toy, child) => {
   const [first, last] = splitName(child);
   console.log("toy", toy, first, last);
   return new Promise((resolve, reject) => {
+    // Make sure you understand what's going on here. sqlite is finicky about how you do a query involving joins and foreign keys. There's a subquery happening that allows us to find the child's id based on its name and filter our results to only delete a toy if that child_id exists on the toy row. "WHERE...IN" syntax allows you to specify multiple values or, like here, in a subquery.
     db.run(
       `DELETE FROM toys
       WHERE name = "${toy}"
@@ -97,8 +98,22 @@ module.exports.getGoodChildren = () => {
   });
 };
 
-module.exports.makeChildHappy = () => {
+module.exports.makeChildHappy = child => {
   return new Promise((resolve, reject) => {
-    resolve("Toys marked as delivered");
+    const [first, last] = splitName(child);
+    db.run(
+      `UPDATE toys
+      SET delivered = 1
+      WHERE toys.child_id IN (
+        SELECT c.child_id from children c
+        WHERE c.first_name = "${first}"
+        AND c.last_name = "${last}"
+      )`,
+      function(err) {
+        if (err) return reject(err);
+        console.log("changes to Yeraldi", this.changes);
+        resolve("Toys marked as delivered!");
+      }
+    );
   });
 };
