@@ -15,10 +15,31 @@ describe("lootbag", () => {
   // Must be able to list all toys for a given child's name.
   describe("getToysByChild", () => {
     it("should return an array", () => {
-      return getToysByChild()
+      return getToysByChild("Sally Smith")
       .then( (data) => {
         isArray(data);
       })
+    });
+
+    it("should contain a collection of objects", () => {
+      return getToysByChild("Sally Smith")
+      .then( (toyData) => {
+        isObject(toyData[0]);
+      });
+    });
+
+    it("should return properties of a child's toy", () => {
+      return getToysByChild("Sally Smith")
+      .then( (toyData) => {
+        equal(toyData[0].name, "Game Boy");
+      });
+    });
+
+    it("should return a msg if a child has no toys", () => {
+      return getToysByChild("Günter Berger")
+      .then((msg) => {
+        equal("This child has no toys in the bag", msg);
+      });
     });
   });
 
