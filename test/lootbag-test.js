@@ -70,8 +70,18 @@ describe("lootbag", () => {
   describe("removeToy", () => {
     it("should verify that a toy was removed", () => {
       const expected = "Toy removed from DB";
-      return removeToy().then(msg => {
+      // Again, had to refactor this test after adding the second test that needs child's name to pass
+      return removeToy("ATV helmet", "Bubba Dorkus").then(msg => {
         equal(msg, expected);
+      });
+    });
+
+    it("should only remove a toy if paired with correct child", () => {
+      return removeToy("ATV helmet", "Fanny Haymaker").then(msg => {
+        console.log("message", msg);
+        let expected =
+          "Cannot delete. Please confirm the toy belongs to the child";
+        equal(expected, msg);
       });
     });
   });
@@ -81,6 +91,15 @@ describe("lootbag", () => {
     it("should return an array", () => {
       return getGoodChildren().then(kids => {
         isArray(kids);
+      });
+    });
+
+    it("should return only kids who are good", () => {
+      return getGoodChildren().then(children => {
+        // Loop through the array of kids and make sure none of the objects contain bad kids ( 0 is false)
+        children.forEach(child => {
+          notInclude(child, { isGood: 0 });
+        });
       });
     });
   });
